@@ -83,18 +83,4 @@ public class JMXMonitor extends ABaseMonitor {
         return servers;
     }
 
-    public static void main(String[] args) throws TaskExecutionException, IOException {
-
-        ConsoleAppender ca = new ConsoleAppender();
-        ca.setWriter(new OutputStreamWriter(System.out));
-        ca.setLayout(new PatternLayout("%-5p [%t]: %m%n"));
-        ca.setThreshold(Level.DEBUG);
-        org.apache.log4j.Logger.getRootLogger().addAppender(ca);
-
-        JMXMonitor jmxMonitor = new JMXMonitor();
-        Map<String, String> argsMap = new HashMap<String, String>();
-        argsMap.put("config-file", "/Users/bhuvnesh.kumar/repos/appdynamics/extensions/jmx-monitoring-extension/src/test/resources/conf/config_activemq.yml");
-        jmxMonitor.execute(argsMap, null);
-    }
-
 }
