@@ -49,6 +49,8 @@ public class JMXConnectionAdapter {
     public JMXConnector open() throws IOException {
         JMXConnector jmxConnector;
         final Map<String, Object> env = new HashMap<String, Object>();
+        System.setProperty("javax.net.ssl.trustStore", "/opt/appdynamics/monitors/JMXMonitor/keystore.jks");
+        System.setProperty("javax.net.ssl.trustStorePassword","Password01");
         if (!Strings.isNullOrEmpty(username)) {
             env.put(JMXConnector.CREDENTIALS, new String[]{username, password});
             jmxConnector = JMXConnectorFactory.connect(serviceUrl, env);
