@@ -36,4 +36,8 @@ public class Constants {
     public static final String SERVICEURL = "serviceUrl";
     public static final String TIMEROLLUPTYPE = "timeRollUpType";
     public static final String USERNAME = "username";
+    public static final String TRUSTSTORE = "truststore";
+    public static final String TRUSTSTOREPASSWORD = "truststore_password";
+    public static final String KEYSTORE = "keystore";
+    public static final String KEYSTOREPASSWORD = "keystore_password";
 }

@@ -59,9 +59,13 @@ public class JMXMonitorTask implements AMonitorTaskRunnable {
         int port = NumberUtils.toInt(portStr, -1);
         String username = (String) server.get(USERNAME);
         String password = getPassword(server);
+        String truststore = (String) server.get(TRUSTSTORE);
+        String truststorePassword = (String) server.get(TRUSTSTOREPASSWORD);
+        String keystore = (String) server.get(KEYSTORE);
+        String keystorePassword = (String) server.get(KEYSTOREPASSWORD);
 
         if (!Strings.isNullOrEmpty(serviceUrl) || !Strings.isNullOrEmpty(host)) {
-            jmxConnectionAdapter = JMXConnectionAdapter.create(serviceUrl, host, port, username, password);
+            jmxConnectionAdapter = JMXConnectionAdapter.create(serviceUrl, host, port, username, password, truststore, truststorePassword, keystore, keystorePassword);
         } else {
             throw new MalformedURLException();
         }

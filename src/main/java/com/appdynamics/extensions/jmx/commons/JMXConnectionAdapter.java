@@ -28,33 +28,47 @@ public class JMXConnectionAdapter {
     private final JMXServiceURL serviceUrl;
     private final String username;
     private final String password;
+    private final String truststore;
+    private final String truststorePassword;
+    private final String keystore;
+    private final String keystorePassword;
 
-    private JMXConnectionAdapter(String host, int port, String username, String password) throws MalformedURLException {
-        this("service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi", username, password);
+    private JMXConnectionAdapter(String host, int port, String username, String password, String truststore, String truststorePassword, String keystore, String keystorePassword) throws MalformedURLException {
+        this("service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi", username, password, truststore, truststorePassword, keystore, keystorePassword);
     }
 
-    private JMXConnectionAdapter(String serviceUrl, String username, String password) throws MalformedURLException {
+    private JMXConnectionAdapter(String serviceUrl, String username, String password, String truststore, String truststorePassword, String keystore, String keystorePassword) throws MalformedURLException {
         this.serviceUrl = new JMXServiceURL(serviceUrl);
         this.username = username;
         this.password = password;
+        this.truststore = truststore;
+        this.truststorePassword = truststorePassword;
+        this.keystore = keystore;
+        this.keystorePassword = keystorePassword;
     }
 
-    public static JMXConnectionAdapter create(String serviceUrl, String host, int port, String username, String password) throws MalformedURLException {
+    public static JMXConnectionAdapter create(String serviceUrl, String host, int port, String username, String password, String truststore, String truststorePassword, String keystore, String keystorePassword) throws MalformedURLException {
         if (Strings.isNullOrEmpty(serviceUrl)) {
-            return new JMXConnectionAdapter(host, port, username, password);
+            return new JMXConnectionAdapter(host, port, username, password, truststore, truststorePassword, keystore, keystorePassword);
         } else {
-            return new JMXConnectionAdapter(serviceUrl, username, password);
+            return new JMXConnectionAdapter(serviceUrl, username, password, truststore, truststorePassword, keystore, keystorePassword);
         }
     }
 
     public JMXConnector open() throws IOException {
         JMXConnector jmxConnector;
         final Map<String, Object> env = new HashMap<String, Object>();
-        System.setProperty("javax.net.ssl.trustStore", "/opt/appdynamics/monitors/JMXMonitor/truststore.jks");
-        System.setProperty("javax.net.ssl.trustStorePassword","Password01");
-        System.setProperty("javax.net.ssl.keyStore", "/opt/appdynamics/monitors/JMXMonitor/keystore.jks");
-        System.setProperty("javax.net.ssl.keyStorePassword","Password01");
-        env.put("com.sun.jndi.rmi.factory.socket", new SslRMIClientSocketFactory());
+        if (!Strings.isNullOrEmpty(truststore)) {
+            System.setProperty("javax.net.ssl.trustStore", truststore);
+            System.setProperty("javax.net.ssl.trustStorePassword", truststorePassword);
+        }
+        if (!Strings.isNullOrEmpty(keystore)) {
+            System.setProperty("javax.net.ssl.keyStore", keystore);
+            System.setProperty("javax.net.ssl.keyStorePassword", keystorePassword);
+        }
+        if (!Strings.isNullOrEmpty(truststore) || !Strings.isNullOrEmpty(keystore)) {
+            env.put("com.sun.jndi.rmi.factory.socket", new SslRMIClientSocketFactory());
+        }
         if (!Strings.isNullOrEmpty(username)) {
             env.put(JMXConnector.CREDENTIALS, new String[]{username, password});
             jmxConnector = JMXConnectorFactory.connect(serviceUrl, env);
